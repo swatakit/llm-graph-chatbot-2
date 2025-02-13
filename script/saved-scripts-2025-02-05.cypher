@@ -1,10 +1,17 @@
+
+//Show schema
+call db.schema.visualization()
+
+//Show sameples
+MATCH (n)
+RETURN (n);
+
 //Connections more than 10
 MATCH (p:Person)-[r]-()
 WITH p, COUNT(r) AS connections
 WHERE connections >= 10
 RETURN p, connections
 ORDER BY connections DESC;
-
 
 // Connections more than 10 in details
 MATCH (p:Person)-[r]-(n)
@@ -13,14 +20,12 @@ WHERE connections >= 10
 RETURN p, connections, connected_nodes
 ORDER BY connections DESC;
 
-
 // Search by Alias
 MATCH (alias:Alias)-[:HAS_ALIAS]-(p:Person)
 WHERE toLower(alias.firstName) CONTAINS toLower("SALIM")
    OR toLower(alias.lastName) CONTAINS toLower("SALIM")
 MATCH (n)-[r]-(p)
 RETURN n, r, p;
-
 
 // Search by Name
 MATCH (alias:Alias)-[:HAS_ALIAS]-(p:Person)
@@ -53,13 +58,6 @@ WHERE alias_count = 5
 RETURN p, alias_count;
 
 
-//Show sameples
-MATCH (n)
-RETURN (n);
-
-//Show schema
-call db.schema.visualization()
-
 //Show shorted path of 2 Person
 MATCH path = shortestPath((p1:Person)-[*]-(p2:Person))
 WHERE p1.id = "2675" AND p2.id = "2691"
@@ -74,6 +72,6 @@ WITH p, COLLECT(DISTINCT connectedPerson) AS group
 RETURN group;
 
 
-// Z**DELETE
+// DELETE everything!!
 MATCH (n)
 DETACH DELETE n;
