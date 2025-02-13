@@ -46,11 +46,11 @@ TAVILY_API_KEY="tvly-...UIj"
 NEO4J_URI="bolt://localhost:7687"
 NEO4J_USER="neo4j"
 NEO4J_PASSWORD="<password>"
-LANGCHAIN_API_KEY="lsv2_..85"
 ```
 
 Optional environment variables:
 ```bash
+LANGCHAIN_API_KEY="lsv2_..85"
 LANGCHAIN_TRACING_V2=true
 LANGCHAIN_ENDPOINT="https://api.smith.langchain.com"
 LANGSMITH_PROJECT="langgraph-aml"
