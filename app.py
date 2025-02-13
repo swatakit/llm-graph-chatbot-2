@@ -161,8 +161,8 @@ def main():
         * `LANGSMITH_PROJECT`: Project name for tracking
 
         ### More Information
-        - Obtain OpenAI AAPI key from [OpenAI](https://platform.openai.com/account/api-keys)
-        - Obtain Tavily API key from [Tavily](https://tavilysanctions.com/)
+        - Obtain OpenAI AAPI key from [OpenAI](https://platform.openai.com/)
+        - Obtain Tavily API key from [Tavily](https://tavily.com/)
         - For detailed insights and tracking, visit [LangSmith](https://www.langchain.com/langsmith)
         - For detailed LangGraph implementation, visit [LangGraph](https://langchain-ai.github.io/langgraph/)
         """)
