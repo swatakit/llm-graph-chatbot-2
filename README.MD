@@ -1,6 +1,6 @@
 # Build a AML/OFAC GraphRag ChatBot with OpenAI, Neo4j and LangGraph
 
-<img src="clip.gif" width="100%" height="100%"/>
+<img src="clip.gif" width="50%" height="50%"/>
 
 ## Description
 
