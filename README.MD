@@ -1,5 +1,8 @@
 # Build a AML/OFAC GraphRag ChatBot with OpenAI, Neo4j and LangGraph
 
+
+![alt text](clip.gif)
+
 ## Description
 
 This is a repository for a Claim Chatbot backed by neo4j graph database. Recommended pre-requisite knowledge can be found [here](https://github.com/swatakit/llm-graph-chatbot).
@@ -60,6 +63,6 @@ Ensure that Neo4j has started, then start the app on [http://localhost:8501/](ht
 streamlit run app.py
 ```
 
-## Usefule Cypher Commands
+## Useful Cypher Commands
 
 Please refer to this [script](script/saved-scripts-2025-02-05.cypher)
