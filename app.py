@@ -123,7 +123,7 @@ def main():
 
                 # Image display with size control
         st.image("schema.PNG", 
-                caption="SGraph Schema", 
+                caption="Graph Schema", 
                 width=300) 
 
 
