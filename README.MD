@@ -4,7 +4,7 @@
 
 ## Description
 
-This is a repository for a Claim Chatbot backed by neo4j graph database. Recommended pre-requisite knowledge can be found [here](https://github.com/swatakit/llm-graph-chatbot).
+This is a repository for a Chatbot backed by neo4j graph database. Recommended pre-requisite knowledge can be found [here](https://github.com/swatakit/llm-graph-chatbot).
 
 ## 1. Install Neo4j Desktop
 
