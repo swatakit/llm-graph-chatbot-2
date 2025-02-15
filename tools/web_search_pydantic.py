@@ -1,12 +1,11 @@
-# tools/web_search.py
+# tools/web_search_pydantic.py
 
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 from pydantic import BaseModel, Field
 from langchain.tools import BaseTool
-from langchain_community.tools.tavily_search import TavilySearchResults
-from langchain_core.output_parsers import PydanticOutputParser
-from dotenv import load_dotenv
+from tavily import TavilyClient
 import os
+from dotenv import load_dotenv
 import json
 
 class SearchResult(BaseModel):
@@ -14,22 +13,21 @@ class SearchResult(BaseModel):
     title: str = Field(description="Title of the search result")
     url: str = Field(description="URL of the search result")
     content: str = Field(description="Summary or content of the search result")
-    relevance_score: Optional[float] = Field(
-        description="Relevance score from 0 to 1", 
-        default=None
-    )
+    score: float = Field(description="Relevance score from 0 to 1")
+    raw_content: Optional[str] = Field(description="Raw content if available")
 
 class WebSearchResults(BaseModel):
     """Container for multiple search results"""
     query: str = Field(description="The original search query")
     results: List[SearchResult] = Field(description="List of search results")
     total_results: int = Field(description="Total number of results found")
-
-# Create parser
-search_parser = PydanticOutputParser(pydantic_object=WebSearchResults)
+    response_time: Optional[float] = Field(description="Response time in seconds")
+    follow_up_questions: Optional[List[str]] = Field(description="Follow up questions if any")
+    answer: Optional[str] = Field(description="Direct answer if available")
+    images: List[str] = Field(default_factory=list, description="List of image URLs")
 
 class TavilySearchTool(BaseTool):
-    """Tool for performing web searches using Tavily"""
+    """Tool for performing web searches specific to sanctions and AML information"""
     name: str = "web_search"
     description: str = """Use this tool to search for supplementary information about:
         - Sanctions programs and regulations
@@ -39,89 +37,109 @@ class TavilySearchTool(BaseTool):
         - International regulatory frameworks
         Do NOT use this tool for general web searches or unrelated topics."""
     
-    def _run(self, query: str) -> str:
+    def _run(self, query: str) -> Dict[str, Any]:
         """Run the tool."""
         try:
-            search = TavilySearchResults(
-                max_results=3,
-                search_depth='advanced',
-                include_answer=True,
+            # Initialize Tavily client
+            client = TavilyClient(api_key=os.getenv("TAVILY_API_KEY"))
+            
+            # Get response from Tavily
+            response = client.search(
+                query=query,
+                search_depth="advanced",
+                include_answer="advanced",
                 include_raw_content=True,
+                include_images=True,
+                max_results=3
             )
             
-            raw_response = search.invoke(query)
-            
-            # Format results into our Pydantic model
-            search_results = [
-                SearchResult(
-                    title=result.get("title", ""),
-                    url=result.get("url", ""),
-                    content=result.get("content", ""),
-                    relevance_score=result.get("score")
-                )
-                for result in raw_response if isinstance(result, dict)
-            ]
-            
-            # Create full results object
+            # Create Pydantic model instance
             formatted_results = WebSearchResults(
-                query=query,
-                results=search_results,
-                total_results=len(search_results)
+                query=response.get("query", query),
+                results=response.get("results", []),
+                total_results=len(response.get("results", [])),
+                response_time=response.get("response_time"),
+                follow_up_questions=response.get("follow_up_questions"),
+                answer=response.get("answer"),
+                images=response.get("images", [])
             )
             
             return formatted_results.model_dump()
             
         except Exception as e:
-            # Return error in a structured way
-            return WebSearchResults(
+            error_results = WebSearchResults(
                 query=query,
                 results=[],
-                total_results=0
+                total_results=0,
+                images=[]
             ).model_dump()
-            
-    def _arun(self, query: str) -> str:
-        """TODO: Implement async version if needed"""
-        raise NotImplementedError("Async version not implemented")
+            error_results['error'] = str(e)
+            return error_results
+
+def print_results_json(results: Dict[str, Any], indent: int = 2, file_path: str = None):
+    """
+    Print search results in JSON format with optional file output.
     
+    Args:
+        results: Dictionary containing search results
+        indent: Number of spaces for JSON indentation (default: 2)
+        file_path: Optional path to save JSON output to a file
+    """
+    # Convert to JSON string with proper formatting
+    json_output = json.dumps(results, indent=indent, ensure_ascii=False)
+    
+    # Print to console
+    print(json_output)
+    
+    # If file path is provided, save to file
+    if file_path:
+        with open(file_path, 'w', encoding='utf-8') as f:
+            f.write(json_output)
 
 def pretty_print_results(results):
     """Helper function to print results in a readable format"""
     print("\nSearch Query:", results.get('query'))
-    print("Total Results:", results.get('total_results'))
+    print(f"Total Results: {results.get('total_results')}")
+    
+    if results.get('response_time'):
+        print(f"Response Time: {results.get('response_time'):.2f}s")
+    
+    if results.get('answer'):
+        print("\nDirect Answer:", results.get('answer'))
+    
     print("\nResults:")
     for i, result in enumerate(results.get('results', []), 1):
         print(f"\n--- Result {i} ---")
-        print("Title:", result.get('title'))
-        print("URL:", result.get('url'))
-        print("Content:", result.get('content'))
-        if result.get('relevance_score'):
-            print("Relevance Score:", result.get('relevance_score'))
+        print(f"Title: {result.get('title')}")
+        print(f"URL: {result.get('url')}")
+        print(f"Content: {result.get('content')}")
+        print(f"Score: {result.get('score'):.4f}")
+    
+    if results.get('follow_up_questions'):
+        print("\nFollow-up Questions:")
+        for q in results.get('follow_up_questions'):
+            print(f"- {q}")
+    
     if 'error' in results:
         print("\nError:", results['error'])
 
 if __name__ == "__main__":
     # Load environment variables
-    load_dotenv('../.env',override=True)
+    load_dotenv("../.env",override=True)
+
     
-    # Check for API key
     if not os.getenv("TAVILY_API_KEY"):
         print("Error: TAVILY_API_KEY not found in environment variables")
-        print("Please set your Tavily API key in the .env file or environment variables")
         exit(1)
         
-    # Create search tool and run test query
     try:
         search_tool = TavilySearchTool()
         print("Running search...")
         results = search_tool.run("latest updates on US sanctions programs")
         
-        # Print results in a readable format
+        # Print results
+        print_results_json(results, file_path="search_results.json")
         pretty_print_results(results)
         
-        # Also save to file for reference
-        with open('search_results.json', 'w') as f:
-            json.dump(results, f, indent=2)
-            print("\nResults also saved to search_results.json")
-            
     except Exception as e:
         print(f"Error running search: {e}")
