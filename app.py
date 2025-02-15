@@ -79,6 +79,7 @@ def process_message(prompt: str, chat_container):
                                             st.components.v1.html(
                                                 visualization_html, 
                                                 height=650, 
+                                                width=650,
                                                 scrolling=True
                                             )
                         except json.JSONDecodeError as e:
@@ -176,9 +177,11 @@ def main():
         
         st.header("Quick Questions")
         questions = [
-
+            "What is money laudering and what is the impact?",
+            "What is the latest news about US sanctions?",
             "Find all information about one person that goes by name Ayman",
             "Find persons who has alias more than 10",
+            "Do we have information about one person that goes by name Alcides , and can you search internet for the latest news or article about him",
             "List out all program name",
             "Find people sanctioned in 'SDGT' programs",
             "Can you search the web for latest news Jihad Group",

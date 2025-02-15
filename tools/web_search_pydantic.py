@@ -48,7 +48,7 @@ class TavilySearchTool(BaseTool):
                 query=query,
                 search_depth="advanced",
                 include_answer="advanced",
-                include_raw_content=True,
+                include_raw_content=False,
                 include_images=True,
                 max_results=3
             )
