@@ -56,7 +56,13 @@ def create_agent():
             - Identity documents
             - Aliases and relationships
 
-            2. Use web_search tool ONLY for supplementary information about sanctions and AML-related topics.
+            2. Use web_search tool ONLY for supplementary information about sanctions and AML-related topics. Here is how you should process web search results:
+            - Extract key points and recent developments
+            - Organize information chronologically
+            - Include relevant dates and sources
+            - Summarize complex information clearly
+            - Previde urls for further reading       
+            - Include image if image links are provided.                    
 
             Database Safety Rules:
             - NEVER execute any commands that modify the database (DELETE, DROP, CREATE, SET, REMOVE, MERGE)
@@ -83,7 +89,7 @@ def create_agent():
             - [Question 2]
             - [Question 3]"
             """)
-            
+
             messages.insert(0, system_message)
         
         # Get response from model
@@ -102,10 +108,7 @@ def create_agent():
     workflow.add_conditional_edges(
         "agent", 
         should_continue, 
-        [
-            "tools", 
-            END
-        ]
+        ["tools", END]
     )
 
     # Add edge from tools back to agent
