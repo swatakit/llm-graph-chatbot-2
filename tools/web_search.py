@@ -7,7 +7,13 @@ from langchain_community.tools.tavily_search import TavilySearchResults
 class TavilySearchTool(BaseTool):
     """Tool for performing web searches using Tavily"""
     name: str = "web_search"
-    description: str = "Search the web for realtime and latest information about news, stock market, weather updates etc."
+    description: str = """Use this tool to search for supplementary information about:
+        - Sanctions programs and regulations
+        - Updates to sanctions lists
+        - AML compliance requirements
+        - Financial crime prevention
+        - International regulatory frameworks
+        Do NOT use this tool for general web searches or unrelated topics."""
     
     def _run(self, query: str) -> str:
         """Run the tool."""

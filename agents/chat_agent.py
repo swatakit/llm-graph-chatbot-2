@@ -15,7 +15,8 @@ def create_agent():
     )
     
     # Import tools here to avoid circular imports
-    from tools.web_search import TavilySearchTool
+    # from tools.web_search import TavilySearchTool
+    from tools.web_search_pydantic import TavilySearchTool
     from tools.cypher_qa import CypherQATool
     
     # Initialize tools
