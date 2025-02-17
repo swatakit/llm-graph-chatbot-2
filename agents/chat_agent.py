@@ -11,11 +11,10 @@ import getpass
 import socket
 import sqlite3
 from langgraph.checkpoint.sqlite import SqliteSaver
+from langchain_community.chat_message_histories import SQLChatMessageHistory
 
-# Initialize memory saver - store in RAM, this is gone after app terminated
-# memory = MemorySaver()
 
-# Initialize memory saver - with sqlite - create persistent checkpoints
+# Initialize persistence memory saver 
 conn = sqlite3.connect("checkpoints.sqlite",check_same_thread=False)
 memory = SqliteSaver(conn)
 
@@ -80,6 +79,13 @@ def create_agent():
     
     def call_model(state: MessagesState, config):
         """Call the model to get the next response"""
+
+        # Initialize chat history
+        chat_history = SQLChatMessageHistory(
+            session_id=config["configurable"]["thread_id"],
+            connection="sqlite:///chat_history.db"
+        )
+
         messages = state["messages"]
         if not any(isinstance(msg, SystemMessage) for msg in messages):
             system_message = SystemMessage(content="""
@@ -130,6 +136,13 @@ def create_agent():
         
         # Get response from model
         response = model_with_tools.invoke(messages, config=config)
+
+        # Save only new messages to chat history
+        last_message = messages[-1]
+        if isinstance(last_message, HumanMessage):  # Save only if last message was from human
+            chat_history.add_message(last_message)
+        chat_history.add_message(response)
+
         return {"messages": [response]}
 
   

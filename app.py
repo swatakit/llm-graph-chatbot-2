@@ -10,6 +10,7 @@ import json
 from agents.utils.visualization import visualize_neo4j_results_v1,visualize_neo4j_results_v2 
 import streamlit.components.v1 as components
 import getpass
+from langchain_community.chat_message_histories import SQLChatMessageHistory
 
 # Load environment variables
 load_dotenv(override=True)
@@ -20,8 +21,6 @@ def initialize_page():
         page_icon="🤖",
         layout="wide"
     )
-
-    
 
 def process_message(prompt: str, chat_container):
     """Process a message and update the chat"""
@@ -95,15 +94,6 @@ def process_message(prompt: str, chat_container):
                 print(f"Full error: {e}")
 
 def main():
-    # Initialize session state
-    if "messages" not in st.session_state:
-        st.session_state.messages = [
-            AIMessage(content="Hello, how can I help you today?")
-        ]
-    
-    if "selected_question" not in st.session_state:
-        st.session_state.selected_question = None
-
     # Initialize username in session state if not present
     if "username" not in st.session_state:
         try:
@@ -116,6 +106,15 @@ def main():
     if "agent_workflow" not in st.session_state:
         st.session_state.agent_workflow = create_agent()
         st.session_state.chat_config = get_chat_config()
+
+    # Initialize messages for display
+    if "messages" not in st.session_state:
+        st.session_state.messages = [
+            AIMessage(content="Hello, how can I help you today?")
+        ]
+    
+    if "selected_question" not in st.session_state:
+        st.session_state.selected_question = None
 
     initialize_page()
 
