@@ -5,6 +5,21 @@ from langchain_core.messages import BaseMessage, AIMessage, HumanMessage, System
 from langgraph.prebuilt import ToolNode
 from langgraph.graph import START,END, StateGraph, MessagesState
 from langchain_openai import ChatOpenAI
+from langgraph.checkpoint.memory import MemorySaver
+import uuid
+
+# Initialize memory saver
+memory = MemorySaver()
+
+def get_chat_config():
+    """Generate configuration for chat session"""
+    return {
+        "configurable": {
+            "thread_id": str(uuid.uuid4()),  # Generate unique thread ID
+            "checkpoint_ns": "chat_memory",   # Namespace for checkpoints
+            "checkpoint_id": str(uuid.uuid4())  # Unique checkpoint ID
+        }
+    }
 
 def create_agent():
     # Initialize LLM
@@ -42,7 +57,7 @@ def create_agent():
         return END
 
     
-    def call_model(state: MessagesState):
+    def call_model(state: MessagesState, config):
         """Call the model to get the next response"""
         messages = state["messages"]
         if not any(isinstance(msg, SystemMessage) for msg in messages):
@@ -93,7 +108,7 @@ def create_agent():
             messages.insert(0, system_message)
         
         # Get response from model
-        response = model_with_tools.invoke(messages)
+        response = model_with_tools.invoke(messages, config=config)
         return {"messages": [response]}
 
   
@@ -115,7 +130,7 @@ def create_agent():
     workflow.add_edge("tools", "agent")
 
     # Compile the graph
-    app = workflow.compile()
+    app = workflow.compile(checkpointer=memory)
     
     # Optional: Draw the graph
     # try:

@@ -5,7 +5,7 @@ from typing import List
 import os
 from dotenv import load_dotenv
 from langchain_core.messages import AIMessage, HumanMessage, ToolMessage, SystemMessage
-from agents.chat_agent import create_agent
+from agents.chat_agent import create_agent, get_chat_config
 import json
 from agents.utils.visualization import visualize_neo4j_results_v1,visualize_neo4j_results_v2 
 import streamlit.components.v1 as components
@@ -39,7 +39,8 @@ def process_message(prompt: str, chat_container):
             try:
                 # Get response from agent
                 result = st.session_state.agent_workflow.invoke(
-                    {"messages": st.session_state.messages.copy()}
+                    {"messages": st.session_state.messages.copy()},
+                     config=st.session_state.chat_config
                 )
 
                 # First display the final AI response
@@ -105,6 +106,7 @@ def main():
     # Ensure agent workflow is only created once
     if "agent_workflow" not in st.session_state:
         st.session_state.agent_workflow = create_agent()
+        st.session_state.chat_config = get_chat_config()
 
     initialize_page()
 
@@ -173,6 +175,7 @@ def main():
         st.header("Options")
         if st.button("Clear Conversation", type="secondary", use_container_width=True):
             st.session_state.messages = []
+            st.session_state.chat_config = get_chat_config()  # Generate new config
             st.rerun()
         
         st.header("Quick Questions")
