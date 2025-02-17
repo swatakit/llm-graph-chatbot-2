@@ -9,6 +9,7 @@ from agents.chat_agent import create_agent, get_chat_config
 import json
 from agents.utils.visualization import visualize_neo4j_results_v1,visualize_neo4j_results_v2 
 import streamlit.components.v1 as components
+import getpass
 
 # Load environment variables
 load_dotenv(override=True)
@@ -103,7 +104,15 @@ def main():
     if "selected_question" not in st.session_state:
         st.session_state.selected_question = None
 
-    # Ensure agent workflow is only created once
+    # Initialize username in session state if not present
+    if "username" not in st.session_state:
+        try:
+            st.session_state.username = getpass.getuser()
+        except Exception as e:
+            st.warning("Could not get system username. Using default.")
+            st.session_state.username = "default_user"
+
+    # Initialize agent workflow and chat configuration with username
     if "agent_workflow" not in st.session_state:
         st.session_state.agent_workflow = create_agent()
         st.session_state.chat_config = get_chat_config()

@@ -7,17 +7,38 @@ from langgraph.graph import START,END, StateGraph, MessagesState
 from langchain_openai import ChatOpenAI
 from langgraph.checkpoint.memory import MemorySaver
 import uuid
+import getpass
+import socket
+import sqlite3
+from langgraph.checkpoint.sqlite import SqliteSaver
 
-# Initialize memory saver
-memory = MemorySaver()
+# Initialize memory saver - store in RAM, this is gone after app terminated
+# memory = MemorySaver()
 
-def get_chat_config():
-    """Generate configuration for chat session"""
+# Initialize memory saver - with sqlite - create persistent checkpoints
+conn = sqlite3.connect("graph_state_checkpoints.sqlite",check_same_thread=False)
+memory = SqliteSaver(conn)
+
+def get_chat_config(username: str = None):
+    """
+    Generate configuration for chat session
+    Args:
+        username (str, optional): Username for the thread. If None, gets system username
+    """
+    if username is None:
+        try:
+            username = getpass.getuser()
+        except Exception as e:
+            print(f"Could not get system username: {e}")
+            username = "default_user"
+    
+    hostname = socket.gethostname()
+    print(f"thread_id: {username}_{hostname}")
     return {
         "configurable": {
-            "thread_id": str(uuid.uuid4()),  # Generate unique thread ID
-            "checkpoint_ns": "chat_memory",   # Namespace for checkpoints
-            "checkpoint_id": str(uuid.uuid4())  # Unique checkpoint ID
+            "thread_id": f"{username}_{hostname}",  # Combines username and hostname
+            "checkpoint_ns": "graph_state",
+            "checkpoint_id": str(uuid.uuid4())
         }
     }
 
