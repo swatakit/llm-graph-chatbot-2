@@ -22,6 +22,7 @@ Then install the latest langchain community/experimental and other packages
 pip install langchain_community
 pip install langchain-experimental
 pip install langchain_neo4j
+pip install langgraph-checkpoint-sqlite
 pip install neo4j
 pip install pyvis
 pip install py2neo
