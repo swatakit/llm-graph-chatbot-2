@@ -16,7 +16,7 @@ from langgraph.checkpoint.sqlite import SqliteSaver
 # memory = MemorySaver()
 
 # Initialize memory saver - with sqlite - create persistent checkpoints
-conn = sqlite3.connect("graph_state_checkpoints.sqlite",check_same_thread=False)
+conn = sqlite3.connect("checkpoints.sqlite",check_same_thread=False)
 memory = SqliteSaver(conn)
 
 def get_chat_config(username: str = None):
