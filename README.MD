@@ -54,7 +54,7 @@ Optional environment variables:
 LANGCHAIN_API_KEY="lsv2_..85"
 LANGCHAIN_TRACING_V2=true
 LANGCHAIN_ENDPOINT="https://api.smith.langchain.com"
-LANGSMITH_PROJECT="langgraph-aml"
+LANGSMITH_PROJECT="llm-graph-chatbot-2"
 ```
 
 Ensure that Neo4j has started, then start the app on [http://localhost:8501/](http://localhost:8501/)
