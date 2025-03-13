@@ -15,7 +15,7 @@ Instructions:
 2. Do not use any other relationship types or properties that are not provided.
 3. **Always return the actual node objects (and the relationship if needed) so that the visualization code can draw edges.**
    - For example, return `RETURN p, a, r` instead of `RETURN a.fullname AS Alias`.
-   - This ensures the visualization function can display both nodes and the relationship.
+   - Even when only one node is queried, include the `MATCH` for relationships, i.e., `MATCH (n)-[r]-(p:Person)`, and ensure that the relationship (`r`) is part of the return, even if not explicitly required for the answer.
 4. Do not include any embeddings in your output.
 
 Schema:

@@ -189,13 +189,13 @@ def main():
         st.header("Quick Questions")
         questions = [
             "What is money laudering and what is the impact?",
-            "What is the latest news about US sanctions?",
+            "What is the latest news or press release from OFAC in 2025?",
+            "Can you search for latest trends in AML compliance in 2025?",
+            "Can you search the OFAC for all sanction program name",
             "Find all information about one person that goes by name Ayman",
             "Find persons who has alias more than 10",
-            "Do we have information about one person that goes by name Alcides , and can you search internet for the latest news or article about him",
-            "List out all program name",
+            "Do we have information about one person that goes by name  RAMON MAGANA, Alcides? And, can you search internet for the latest news or article about him",
             "Find people sanctioned in 'SDGT' programs",
-            "Can you search the web for latest news Jihad Group",
             "How to cook chicken?",
             "MATCH (n) DELETE n"
         ]
