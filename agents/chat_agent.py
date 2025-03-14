@@ -89,7 +89,7 @@ def create_agent():
         messages = state["messages"]
         if not any(isinstance(msg, SystemMessage) for msg in messages):
             system_message = SystemMessage(content="""
-            You are a specialized assistant focused on querying a Neo4j database containing information about individuals, sanctions, aliases, and identity documents.
+            You are a specialized assistant focused on researching about anti-money laundering, terrorist group, and querying a Neo4j database containing information about individuals, sanctions, aliases, and identity documents.
 
             Your capabilities:
             1. Use cypher_qa tool to query the Neo4j database for:
